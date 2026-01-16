@@ -1,5 +1,6 @@
-from sqlalchemy import Integer, Column, ForeignKey, Table, create_engine, Text, String, DateTime
+from sqlalchemy import Integer, Column, ForeignKey, Table, create_engine, Text, String, DateTime, Numeric
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker, Mapped, mapped_column
+from decimal import Decimal
 
 Base = declarative_base()
 engine = create_engine('sqlite:///ledger.db')
@@ -12,8 +13,10 @@ class User(Base):
     id:Mapped[int] = mapped_column(primary_key=True)
     username:Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     email:Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    pasword:Mapped[int] = mapped_column(Integer(8), nullable=False)
-
+    password_hash:Mapped[str] = mapped_column(String(255), nullable=False)
+    is_admin:Mapped[bool] = mapped_column(default=False)
+    accounts:Mapped[list["Account"]] = relationship("Account", back_populates="user")
+   
 
 class Account(Base):
     __tablename__ = 'accounts'
@@ -21,7 +24,7 @@ class Account(Base):
     id:Mapped[int] = mapped_column(primary_key=True)
     user_id:Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=False)
     account_name:Mapped[str] = mapped_column(String(100), nullable=False)
-    balance:Mapped[float] = mapped_column(nullable=False, default=0.0)
+    balance:Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False, default=Decimal(0.00))
 
     user:Mapped["User"] = relationship("User", back_populates="accounts")
 
