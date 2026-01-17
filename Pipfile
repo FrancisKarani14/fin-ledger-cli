@@ -7,6 +7,8 @@ name = "pypi"
 sqlalchemy = "*"
 click = "*"
 alembic = "*"
+passlib = "*"
+bcrypt = "==4.0.1"
 
 [dev-packages]
 
