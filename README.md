@@ -2,7 +2,7 @@
 # 💰 Fin-Ledger-CLI
 
 **Fin-Ledger-CLI** is a command-line financial ledger application written in **Python**.
-It simulates basic banking operations, allowing **administrators** to manage users and accounts, and **users** to perform transactions such as deposits and withdrawals — all from the terminal.
+It simulates basic banking operations, allowing **users** to perform transactions such as deposits and withdrawals — all from the terminal.
 
 This project is designed as a **backend-focused CLI system**, emphasizing clean architecture, data integrity, and auditability using SQLAlchemy and Alembic.
 
