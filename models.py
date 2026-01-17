@@ -1,9 +1,10 @@
 from sqlalchemy import create_engine, String, Boolean, DateTime, ForeignKey, Numeric, Text, func, Enum as SQLEnum
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
 from decimal import Decimal
 from enum import Enum
 
-Base = DeclarativeBase()
+class Base(DeclarativeBase):
+    pass
 engine = create_engine("sqlite:///ledger.db")
 Session = sessionmaker(bind=engine)
 
