@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e43732626b58b85389f64a83b912350a2de6629b86d843a682bad79375c3bd81"
+            "sha256": "e127b57db1fcac0e27eb1616415cdad8968aadf76670500c657227a5f4d02c24"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -260,6 +260,16 @@
             ],
             "markers": "python_version >= '3.9'",
             "version": "==3.0.3"
+        },
+        "passlib": {
+            "extras": [
+                "bcrypt"
+            ],
+            "hashes": [
+                "sha256:aa6bca462b8d8bda89c70b382f0c298a20b5560af6cbfa2dce410c0a2fb669f1",
+                "sha256:defd50f72b65c5402ab2c573830a6978e5f202ad0d984793c8dde2c4152ebe04"
+            ],
+            "version": "==1.7.4"
         },
         "sqlalchemy": {
             "hashes": [

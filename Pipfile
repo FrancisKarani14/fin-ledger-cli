@@ -8,6 +8,7 @@ sqlalchemy = "*"
 click = "*"
 alembic = "*"
 bcrypt = "*"
+passlib = {extras = ["bcrypt"], version = "*"}
 
 [dev-packages]
 
