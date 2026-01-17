@@ -5,6 +5,7 @@ from enum import Enum
 
 class Base(DeclarativeBase):
     pass
+
 engine = create_engine("sqlite:///ledger.db")
 Session = sessionmaker(bind=engine)
 
@@ -22,25 +23,28 @@ class User(Base):
         String(50), unique=True, nullable=False)
     email: Mapped[str] = mapped_column(
         String(120), unique=True, nullable=False)
-    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
-    is_admin: Mapped[bool] = mapped_column(default=False)
-    accounts: Mapped[list["Account"]] = relationship(
-        "Account", back_populates="user")
+    password: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    wallet: Mapped["Account"] = relationship(
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
 
 
 class Account(Base):
-    __tablename__ = "accounts"
+    __tablename__ = "account"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id"), nullable=False)
-    account_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    balance: Mapped[Decimal] = mapped_column(
-        Numeric(12, 2), default=Decimal("0.00"), nullable=False)
+        ForeignKey("users.id"),
+        unique=True,
+        nullable=False
+    )
+    balance: Mapped[float] = mapped_column(default=0.0)
 
-    user: Mapped["User"] = relationship("User", back_populates="accounts")
-    transactions: Mapped[list["Transaction"]] = relationship(
-        "Transaction", back_populates="account", cascade="all, delete-orphan")
+    user: Mapped["User"] = relationship(back_populates="wallet")
+
 
 
 class Transaction(Base):
