@@ -1,8 +1,3 @@
-Here’s a **clean, professional, senior-level README** rewritten in proper Markdown. I’ve fixed grammar, structure, consistency, and added the missing but expected sections (overview, architecture, usage, security notes, roadmap).
-
-You can copy-paste this directly into your `README.md`.
-
----
 
 # 💰 Fin-Ledger-CLI
 
