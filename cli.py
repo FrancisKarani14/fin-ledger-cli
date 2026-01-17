@@ -9,13 +9,13 @@ deposite, withdraw, delete_account
 # main menu
 
 while True:
-    print("\nPersonal Ledger CLI")
-    print("1. Add User")
-    print("2. Create Account")
-    print("3. Deposit")
-    print("4. Withdraw")
-    print("5. Delete Account")
-    print("6. Exit")
+    click.secho("\nPersonal Ledger CLI", fg="blue")
+    click.secho("1. Add User", fg="green")
+    click.secho("2. Create Account", fg="green")
+    click.secho("3. Deposit", fg="green")
+    click.secho("4. Withdraw", fg="green")
+    click.secho("5. Delete Account", fg="green")
+    click.secho("6. Exit", fg="red")
 
     choice = input("Select an option: ")
 
@@ -49,8 +49,8 @@ while True:
         delete_account(account_id)
 
     elif choice == "6":
-        print("Exiting...")
+        click.secho("Exiting...")
         break
 
     else:
-        print("Invalid option. Please try again.")
+        click.secho("Invalid option. Please try again.")
