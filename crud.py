@@ -1,53 +1,51 @@
+from models import Account, Transaction, Session, TransactionType
 from decimal import Decimal
-from models import SessionLocal, Transaction, TransactionType
-from auth import require_login
 
 
-def deposit(amount: Decimal, description: str = ""):
-    user = require_login()
-    db = SessionLocal()
-
+def deposit(account_id, amount, description=""):
+    session = Session()
     try:
-        account = db.get(type(user.wallet), user.wallet.id)
+        account = session.get(Account, account_id)
+        if not account:
+            raise ValueError("Account not found")
 
-        account.balance += amount
-
-        tx = Transaction(
-            account=account,
+        txn = Transaction(
+            account_id=account_id,
             type=TransactionType.deposit,
-            amount=amount,
-            description=description
+            amount=Decimal(amount),
+            description=description,
         )
 
-        db.add(tx)
-        db.commit()
-        print(f"Deposited {amount}. Balance: {account.balance}")
+        account.balance += Decimal(amount)
+
+        session.add(txn)
+        session.commit()
+        print("Deposit successful")
     finally:
-        db.close()
+        session.close()
 
 
-def withdraw(amount: Decimal, description: str = ""):
-    user = require_login()
-    db = SessionLocal()
-
+def withdraw(account_id, amount, description=""):
+    session = Session()
     try:
-        account = db.get(type(user.wallet), user.wallet.id)
+        account = session.get(Account, account_id)
+        if not account:
+            raise ValueError("Account not found")
 
-        if account.balance < amount:
-            print("Insufficient funds")
-            return
+        if account.balance < Decimal(amount):
+            raise ValueError("Insufficient balance")
 
-        account.balance -= amount
-
-        tx = Transaction(
-            account=account,
+        txn = Transaction(
+            account_id=account_id,
             type=TransactionType.withdrawal,
-            amount=amount,
-            description=description
+            amount=Decimal(amount),
+            description=description,
         )
 
-        db.add(tx)
-        db.commit()
-        print(f"Withdrew {amount}. Balance: {account.balance}")
+        account.balance -= Decimal(amount)
+
+        session.add(txn)
+        session.commit()
+        print("Withdrawal successful")
     finally:
-        db.close()
+        session.close()

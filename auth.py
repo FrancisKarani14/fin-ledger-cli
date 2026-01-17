@@ -1,51 +1,62 @@
 from passlib.hash import bcrypt
-from models import SessionLocal, User, Account
-from decimal import Decimal
+from models import User, Account, Session
 
-current_user: User | None = None
+_current_user = None
 
 
-def signup(username: str, email: str, password: str) -> User:
-    db = SessionLocal()
+def signup(username, email, password):
+    session = Session()
     try:
         password_hash = bcrypt.hash(password)
 
         user = User(
             username=username,
             email=email,
-            password_hash=password_hash
+            password=password_hash,
         )
 
-        # 🔐 Auto-create wallet
-        wallet = Account(balance=Decimal("0.00"))
-        user.wallet = wallet
+        # auto-create wallet (1–1 relationship)
+        account = Account(balance=0.0)
+        user.wallet = account
 
-        db.add(user)
-        db.commit()
-        db.refresh(user)
+        session.add(user)
+        session.commit()
+        session.refresh(user)
 
+        print("Signup successful. You can now log in.")
         return user
     finally:
-        db.close()
+        session.close()
 
 
-def login(username: str, password: str) -> bool:
-    global current_user
-    db = SessionLocal()
+def login(username, password):
+    global _current_user
+    session = Session()
 
     try:
-        user = db.query(User).filter_by(username=username).first()
+        user = session.query(User).filter_by(username=username).first()
 
-        if not user or not bcrypt.verify(password, user.password_hash):
+        if not user or not bcrypt.verify(password, user.password):
+            print("Invalid username or password")
             return False
 
-        current_user = user
+        _current_user = user
+        print(f"Welcome, {user.username}")
         return True
     finally:
-        db.close()
+        session.close()
 
 
-def require_login() -> User:
-    if current_user is None:
-        raise Exception("You must be logged in")
-    return current_user
+def logout():
+    global _current_user
+    _current_user = None
+    print("Logged out successfully")
+
+
+def get_current_user():
+    return _current_user
+
+
+def require_login():
+    if _current_user is None:
+        raise PermissionError("You must be logged in to perform this action")
