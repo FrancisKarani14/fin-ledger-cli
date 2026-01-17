@@ -20,9 +20,9 @@ while True:
     choice = input("Select an option: ")
 
     if choice == "1":
-        username = input("Username: ")
-        email = input("Email: ")
-        password = input("Password: ")
+        username = input("enter user name: ")
+        email = input("Enter user email: ")
+        password = input(" Enter password: ")
         is_admin = input("Is Admin (y/n): ").lower() == 'y'
         add_user(username, email, password, is_admin)
 
@@ -49,8 +49,8 @@ while True:
         delete_account(account_id)
 
     elif choice == "6":
-        click.secho("Exiting...")
+        click.secho("Exiting session. We will miss you. Goodbye 👋", fg="cyan")
         break
 
     else:
-        click.secho("Invalid option. Please try again.")
+        click.secho("Invalid option. Please try again. 😊", fg="red")
