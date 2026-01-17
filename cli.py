@@ -1,56 +1,42 @@
 import click
+from crud import deposit, withdraw
+from auth import login, signup
 
-from crud import (
-add_user,
-create_account,
-deposite, withdraw, delete_account
-)
-
-# main menu
-
+# main loop
 while True:
-    click.secho("\nPersonal Ledger CLI", fg="blue")
-    click.secho("1. Add User", fg="green")
-    click.secho("2. Create Account", fg="green")
+    click.secho("\nWelcome to Finance Ledger CLI", fg="blue", bold=True)
+    click.secho("1. Login", fg="green")
+    click.secho("2. signup", fg="green")
     click.secho("3. Deposit", fg="green")
     click.secho("4. Withdraw", fg="green")
-    click.secho("5. Delete Account", fg="green")
-    click.secho("6. Exit", fg="red")
+    click.secho("5. Exit", fg="red")
 
-    choice = input("Select an option: ")
+    choice = input("Enter your choice: ")
 
     if choice == "1":
-        username = input("enter user name: ")
-        email = input("Enter user email: ")
-        password = input(" Enter password: ")
-        is_admin = input("Is Admin (y/n): ").lower() == 'y'
-        add_user(username, email, password, is_admin)
+        username = input("Enter username: ")
+        password = input("Enter password: ")
+        login(username, password)
 
     elif choice == "2":
-        user_id = int(input("User ID: "))
-        account_name = input("Account Name: ")
-        initial_balance = float(input("Initial Balance (default 0): ") or 0)
-        create_account(user_id, account_name, initial_balance)
+        username = input("Enter username: ")
+        email = input("Enter email: ")
+        password = input("Enter password: ")
+        signup(username, email, password)
 
     elif choice == "3":
-        account_id = int(input("Account ID: "))
-        amount = float(input("Amount to Deposit: "))
-        description = input("Description (optional): ")
-        deposite(account_id, amount, description)
+        amount = input("Enter amount to deposit: ")
+        description = input("Enter description (optional): ")
+        deposit(amount, description)
 
     elif choice == "4":
-        account_id = int(input("Account ID: "))
-        amount = float(input("Amount to Withdraw: "))
-        description = input("Description (optional): ")
-        withdraw(account_id, amount, description)
+        amount = input("Enter amount to withdraw: ")
+        description = input("Enter description (optional): ")
+        withdraw(amount, description)
 
     elif choice == "5":
-        account_id = int(input("Account ID to Delete: "))
-        delete_account(account_id)
-
-    elif choice == "6":
-        click.secho("Exiting session. We will miss you. Goodbye 👋", fg="cyan")
+        click.secho("Goodbye!", fg="cyan")   
         break
-
     else:
-        click.secho("Invalid option. Please try again. 😊", fg="red")
+        click.secho("Invalid choice. Please try again.")
+
