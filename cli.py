@@ -1,6 +1,8 @@
 import click
 from auth import login, signup, get_current_user, require_login, logout
 from crud import deposit, withdraw
+from models import User
+
 
 while True:
     click.secho("\nFinance Ledger CLI", fg="blue", bold=True)
@@ -20,14 +22,14 @@ while True:
 
     try:
         if choice == "1":
-            username = input("Username: ")
-            password = input("Password: ")
+            username = input("Enter username: ")
+            password = input("Enter password: ")
             login(username, password)
 
         elif choice == "2":
-            username = input("Username: ")
-            email = input("Email: ")
-            password = input("Password: ")
+            username = input("Enter username: ")
+            email = input("Enter email: ")
+            password = input("Enter Password: ")
             signup(username, email, password)
 
         elif choice == "3":
@@ -50,7 +52,7 @@ while True:
             logout()
 
         elif choice == "6":
-            click.secho("Goodbye 👋", fg="cyan")
+            click.secho(f"Goodbye 👋", fg="cyan")
             break
 
         else:

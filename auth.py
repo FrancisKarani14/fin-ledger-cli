@@ -39,16 +39,21 @@ def signup(username: str, email: str, password: str):
 
         password_hash = hash_password(password)
 
+        # 1️⃣ create the user
         user = User(
             username=username,
             email=email,
-            password_hash=password_hash,  # <-- updated
+            password_hash=password_hash
         )
 
-        # auto-create wallet (1–1 relationship)
+        # 2️⃣ add user to session BEFORE creating wallet
+        session.add(user)
+        session.flush()  # <-- ensures user.id is available and user is bound to session
+
+        # 3️⃣ now create the wallet
         user.wallet = Account(balance=0.0)
 
-        session.add(user)
+        # 4️⃣ commit everything
         session.commit()
         session.refresh(user)
 
@@ -57,6 +62,7 @@ def signup(username: str, email: str, password: str):
 
     finally:
         session.close()
+
 
 
 def login(username: str, password: str) -> bool:

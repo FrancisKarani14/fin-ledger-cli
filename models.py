@@ -45,7 +45,8 @@ class User(Base):
     wallet: Mapped["Account"] = relationship(
         back_populates="user",
         uselist=False,
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        lazy="joined"
     )
 
 
