@@ -1,6 +1,4 @@
 from passlib.context import CryptContext
-# from sqlalchemy.orm import Session
-
 from models import User, Account, SessionLocal
 
 # password hashing context (recommended way)
@@ -39,12 +37,12 @@ def signup(username: str, email: str, password: str):
         if session.query(User).filter_by(email=email).first():
             raise ValueError("Email already exists")
 
-        password = hash_password(password)
+        password_hash = hash_password(password)
 
         user = User(
             username=username,
             email=email,
-            password=password,
+            password_hash=password_hash,  # <-- updated
         )
 
         # auto-create wallet (1–1 relationship)
@@ -65,11 +63,11 @@ def login(username: str, password: str) -> bool:
     global _current_user
     session = SessionLocal()
 
-
     try:
         user = session.query(User).filter_by(username=username).first()
 
-        if not user or not verify_password(password, user.password):
+        # <-- updated
+        if not user or not verify_password(password, user.password_hash):
             print("Invalid username or password")
             return False
 
