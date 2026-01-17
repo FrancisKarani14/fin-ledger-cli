@@ -1,26 +1,30 @@
 from passlib.hash import bcrypt
 from database import SessionLocal
-from models import User
+from models import User, Account
 
 current_user = None
 
 
-def signup(username, email, password, is_admin=False):
+def signup(username, email, password):
     db = SessionLocal()
     try:
         password_hash = bcrypt.hash(password)
 
-        user = User(
+        new_user = User(
             username=username,
             email=email,
             password=password_hash,
-            is_admin=is_admin
+            
         )
 
-        db.add(user)
+        # auto create an account
+        new_account = Account(balance=0.0)
+        new_user.account = new_account
+
+        db.add(new_user)
         db.commit()
-        db.refresh(user)
-        return user
+        db.refresh(new_user)
+        return new_user
     finally:
         db.close()
 
