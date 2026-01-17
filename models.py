@@ -1,18 +1,35 @@
-from sqlalchemy import create_engine, String, Boolean, DateTime, ForeignKey, Numeric, Text, func, Enum as SQLEnum
+from sqlalchemy import (
+    create_engine,
+    String,
+    DateTime,
+    ForeignKey,
+    Numeric,
+    Text,
+    func,
+    Enum as SQLEnum,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
 from decimal import Decimal
 from enum import Enum
 
+# ---------------- Base ----------------
+
+
 class Base(DeclarativeBase):
     pass
 
-engine = create_engine("sqlite:///ledger.db")
-Session = sessionmaker(bind=engine)
+
+engine = create_engine("sqlite:///ledger.db", echo=False)
+SessionLocal = sessionmaker(bind=engine)
+
+# ---------------- Enums ----------------
 
 
 class TransactionType(Enum):
     deposit = "deposit"
     withdrawal = "withdrawal"
+
+# ---------------- Models ----------------
 
 
 class User(Base):
@@ -23,7 +40,7 @@ class User(Base):
         String(50), unique=True, nullable=False)
     email: Mapped[str] = mapped_column(
         String(120), unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(String(255), nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
 
     wallet: Mapped["Account"] = relationship(
         back_populates="user",
@@ -33,7 +50,7 @@ class User(Base):
 
 
 class Account(Base):
-    __tablename__ = "account"
+    __tablename__ = "accounts"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(
@@ -41,10 +58,16 @@ class Account(Base):
         unique=True,
         nullable=False
     )
-    balance: Mapped[float] = mapped_column(default=0.0)
+    balance: Mapped[Decimal] = mapped_column(
+        Numeric(12, 2),
+        default=Decimal("0.00")
+    )
 
     user: Mapped["User"] = relationship(back_populates="wallet")
-
+    transactions: Mapped[list["Transaction"]] = relationship(
+        back_populates="account",
+        cascade="all, delete-orphan"
+    )
 
 
 class Transaction(Base):
@@ -52,12 +75,22 @@ class Transaction(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     account_id: Mapped[int] = mapped_column(
-        ForeignKey("accounts.id"), nullable=False)
+        ForeignKey("accounts.id"),
+        nullable=False
+    )
     type: Mapped[TransactionType] = mapped_column(
-        SQLEnum(TransactionType), nullable=False)
+        SQLEnum(TransactionType),
+        nullable=False
+    )
     amount: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
     description: Mapped[str] = mapped_column(Text)
-    date: Mapped[DateTime] = mapped_column(DateTime, server_default=func.now())
+    date: Mapped[DateTime] = mapped_column(
+        DateTime,
+        server_default=func.now()
+    )
 
-    account: Mapped["Account"] = relationship(
-        "Account", back_populates="transactions")
+    account: Mapped["Account"] = relationship(back_populates="transactions")
+
+
+def init_db():
+    Base.metadata.create_all(engine)

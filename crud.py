@@ -1,102 +1,53 @@
-from models import User, Account, Transaction, Session, TransactionType
+from decimal import Decimal
+from models import SessionLocal, Transaction, TransactionType
+from auth import require_login
 
-def add_user(username, email, password_hash, is_admin=False):
-    session = Session()
+
+def deposit(amount: Decimal, description: str = ""):
+    user = require_login()
+    db = SessionLocal()
+
     try:
-        new_user = User(
-            username=username,
-            email=email,
-            password_hash=password_hash,
-            is_admin=is_admin
+        account = db.get(type(user.wallet), user.wallet.id)
+
+        account.balance += amount
+
+        tx = Transaction(
+            account=account,
+            type=TransactionType.deposit,
+            amount=amount,
+            description=description
         )
-        session.add(new_user)
-        session.commit()
-        print(f"User {username} added successfully.")
-    except Exception as e:
-        print(f"Error adding user: {e}")
-        session.rollback()
+
+        db.add(tx)
+        db.commit()
+        print(f"Deposited {amount}. Balance: {account.balance}")
     finally:
-        session.close()
+        db.close()
 
 
-def create_account(user_id, account_name, initial_balance=0):
-    session = Session()
+def withdraw(amount: Decimal, description: str = ""):
+    user = require_login()
+    db = SessionLocal()
+
     try:
-        new_account = Account(
-            user_id=user_id,
-            account_name=account_name,
-            balance=initial_balance
+        account = db.get(type(user.wallet), user.wallet.id)
+
+        if account.balance < amount:
+            print("Insufficient funds")
+            return
+
+        account.balance -= amount
+
+        tx = Transaction(
+            account=account,
+            type=TransactionType.withdrawal,
+            amount=amount,
+            description=description
         )
-        session.add(new_account)
-        session.commit()
-        print(f"Account {account_name} created successfully.")
-    except Exception as e:
-        print(f"Error creating account: {e}")
-        session.rollback()
-    finally:
-        session.close()
 
-def deposite(account_id, amount, description=""):
-    session = Session()
-    try:
-        account = session.get(Account, account_id)
-        if account:
-            new_transaction = Transaction(
-                account_id=account_id,
-                type=TransactionType.deposit,
-                amount=amount,
-                description=description
-            )
-            account.balance += amount
-            session.add(new_transaction)
-            session.commit()
-            print(f"Deposited {amount} to account {account_id}.")
-        else:
-            print(f"Account {account_id} not found.")
-    except Exception as e:
-        print(f"Error during deposit: {e}")
-        session.rollback()
+        db.add(tx)
+        db.commit()
+        print(f"Withdrew {amount}. Balance: {account.balance}")
     finally:
-        session.close()
-
-def withdraw(account_id, amount, description=""):
-    session = Session()
-    try:
-        account = session.get(Account, account_id)
-        if account:
-            if account.balance >= amount:
-                new_transaction = Transaction(
-                    account_id=account_id,
-                    type=TransactionType.withdrawal,
-                    amount=amount,
-                    description=description
-                )
-                account.balance -= amount
-                session.add(new_transaction)
-                session.commit()
-                print(f"Withdrew {amount} from account {account_id}.")
-            else:
-                print(f"Insufficient funds in account {account_id}.")
-        else:
-            print(f"Account {account_id} not found.")
-    except Exception as e:
-        print(f"Error during withdrawal: {e}")
-        session.rollback()
-    finally:
-        session.close()
-
-def delete_account(account_id):
-    session = Session()
-    try:
-        account = session.get(Account, account_id)
-        if account:
-            session.delete(account)
-            session.commit()
-            print(f"Account {account_id} deleted successfully.")
-        else:
-            print(f"Account {account_id} not found.")
-    except Exception as e:
-        print(f"Error deleting account: {e}")
-        session.rollback()
-    finally:
-        session.close()
+        db.close()

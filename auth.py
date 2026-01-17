@@ -1,41 +1,42 @@
 from passlib.hash import bcrypt
-from database import SessionLocal
-from models import User, Account
+from models import SessionLocal, User, Account
+from decimal import Decimal
 
-current_user = None
+current_user: User | None = None
 
 
-def signup(username, email, password):
+def signup(username: str, email: str, password: str) -> User:
     db = SessionLocal()
     try:
         password_hash = bcrypt.hash(password)
 
-        new_user = User(
+        user = User(
             username=username,
             email=email,
-            password=password_hash,
-            
+            password_hash=password_hash
         )
 
-        # auto create an account
-        new_account = Account(balance=0.0)
-        new_user.account = new_account
+        # 🔐 Auto-create wallet
+        wallet = Account(balance=Decimal("0.00"))
+        user.wallet = wallet
 
-        db.add(new_user)
+        db.add(user)
         db.commit()
-        db.refresh(new_user)
-        return new_user
+        db.refresh(user)
+
+        return user
     finally:
         db.close()
 
 
-def login(username, password):
+def login(username: str, password: str) -> bool:
     global current_user
     db = SessionLocal()
 
     try:
-        user = db.query(User).filter(User.username == username).first()
-        if not user or not bcrypt.verify(password, user.password):
+        user = db.query(User).filter_by(username=username).first()
+
+        if not user or not bcrypt.verify(password, user.password_hash):
             return False
 
         current_user = user
@@ -44,6 +45,7 @@ def login(username, password):
         db.close()
 
 
-def require_login():
+def require_login() -> User:
     if current_user is None:
         raise Exception("You must be logged in")
+    return current_user
