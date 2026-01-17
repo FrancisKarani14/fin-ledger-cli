@@ -13,13 +13,9 @@ This project is designed as a **backend-focused CLI system**, emphasizing clean 
 ### 🔐 Authentication & Roles
 
 * CLI-based login system
-* Role-based access (Admin vs User)
+* Accounts/wallets are creates immedietely on signup
 
-### 👤 User & Account Management (Admin)
 
-* Create users
-* Create accounts
-* Delete accounts
 
 ### 💸 Transactions (Users)
 
@@ -44,6 +40,7 @@ This project is designed as a **backend-focused CLI system**, emphasizing clean 
 * **Alembic** – database migrations
 * **Click** – command-line interface framework
 * **SQLite** – lightweight relational database (default)
+* **bcrypt** - a password hashing function
 
 ---
 
@@ -114,12 +111,13 @@ fin-ledger-cli/
 
 Once the CLI starts, you will be presented with an interactive menu similar to the example below:
 
-<img width="341" height="192" alt="CLI Screenshot" src="https://github.com/user-attachments/assets/9ab967e1-9fc6-47dc-aadf-7abb89b63e50" />
+<img width="425" height="197" alt="image" src="https://github.com/user-attachments/assets/94c63e83-7698-4d84-b3d6-cc4568f098f4" />
+
 
 Follow the on-screen prompts to:
 
 * Log in
-* Create users/accounts (admin)
+* signup
 * Deposit or withdraw funds
 * View balances
 
