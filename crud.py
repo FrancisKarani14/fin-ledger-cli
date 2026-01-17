@@ -1,9 +1,9 @@
-from models import Account, Transaction, Session, TransactionType
+from models import Account, Transaction, SessionLocal, TransactionType
 from decimal import Decimal
 
 
 def deposit(account_id, amount, description=""):
-    session = Session()
+    session = SessionLocal()
     try:
         account = session.get(Account, account_id)
         if not account:
@@ -26,7 +26,7 @@ def deposit(account_id, amount, description=""):
 
 
 def withdraw(account_id, amount, description=""):
-    session = Session()
+    session = SessionLocal()
     try:
         account = session.get(Account, account_id)
         if not account:

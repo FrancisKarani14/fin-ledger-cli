@@ -40,7 +40,7 @@ class User(Base):
         String(50), unique=True, nullable=False)
     email: Mapped[str] = mapped_column(
         String(120), unique=True, nullable=False)
-    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    password: Mapped[str] = mapped_column(String(255), nullable=False)
 
     wallet: Mapped["Account"] = relationship(
         back_populates="user",
